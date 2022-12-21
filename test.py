@@ -46,3 +46,17 @@ f1 = sklearn.metrics.f1_score(test_Y, test_pred)
 
 print('blah')
 
+# ------------ Primer split data, read data usage
+from utils import split_data, read_data
+
+model_cell_data = {}
+for model in ['Gimme', 'iMAT', 'init', 'Tinit']:
+    for cell in ['293T', 'A549', 'CALU', 'Lung', 'NHBE']:
+        model_cell_data[model + '_' + cell] = split_data(read_data(model=model, cells=cell))
+
+# Primer
+model_cell_data['Gimme_293T']['X'][0] # Gimme_293T train set X
+model_cell_data['Gimme_293T']['X'][1] # Gimme_293T train set X
+model_cell_data['Gimme_293T']['Y'][0] # Gimme_293T train set Y
+model_cell_data['Gimme_293T']['Y'][1] # Gimme_293T train set Y
+
