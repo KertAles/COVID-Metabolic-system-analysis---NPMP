@@ -38,7 +38,22 @@ def read_split_data(path='./data/', model='Gimme', cell='293T', shuffle=False, s
 
     return train_X, train_Y, test_X, test_Y, reactions
 
-def crossevaluation(data, i=0, ratio=0.2) :
+def read_subsystem() :
+
+
+    #returns : {'subsys1' : [], 'subsys2': [] .... }
+
+def read_subsystem_data(path='./data/', model='Gimme', cell='293T', shuffle=False, shuffle_seed=42, ratio=0.2, subsystem='neki') :
+    data, common_reaction = read_data(path, model, cell, shuffle, shuffle_seed, ratio)
+
+    #TODO :: preberi iz txt vse podsisteme in pripadajoče reakcije
+    #TODO :: relevant_reaction = common_reaction & subsys_reactions
+    #TODO :: extract relevant reactions
+
+
+
+
+def crossevalidation(data, i=0, ratio=0.2) :
     # TODO:: Za na koncu
 
     raise NotImplementedError
