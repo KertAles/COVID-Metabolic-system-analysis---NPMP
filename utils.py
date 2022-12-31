@@ -39,18 +39,26 @@ def read_split_data(path='./data/', model='Gimme', cell='293T', shuffle=False, s
     return train_X, train_Y, test_X, test_Y, reactions
 
 def read_subsystem() :
+    subsystem_dict = {}
+    subs_data = pd.read_csv("data/Human-GEM_subsystems.csv", sep = ';')
+    for i in range(len(subs_data["subsystem"])):
+        subsystem = subs_data["subsystem"][i]
+        reaction = subs_data["rxn"][i]
 
-
+        if subsystem in subsystem_dict.keys():
+            subsystem_dict[subsystem].append(reaction)
+        else:
+            subsystem_dict[subsystem]  = [reaction]
     #returns : {'subsys1' : [], 'subsys2': [] .... }
+    return subsystem_dict
 
-def read_subsystem_data(path='./data/', model='Gimme', cell='293T', shuffle=False, shuffle_seed=42, ratio=0.2, subsystem='neki') :
-    data, common_reaction = read_data(path, model, cell, shuffle, shuffle_seed, ratio)
-
-    #TODO :: preberi iz txt vse podsisteme in pripadajoče reakcije
-    #TODO :: relevant_reaction = common_reaction & subsys_reactions
-    #TODO :: extract relevant reactions
-
-
+def read_subsystem_data(subsystem_dict, common_reactions, subsystem='neki') :
+    #Done :: preberi iz txt vse podsisteme in pripadajoče reakcije
+    #Done :: relevant_reaction = common_reaction & subsys_reactions
+    #Done :: extract relevant reactions
+    subsystem_reactions = subsystem_dict[subsystem]
+    relevant_reactions = set(subsystem_reactions).intersection(set(common_reactions))
+    return relevant_reactions
 
 
 def crossevalidation(data, i=0, ratio=0.2) :
