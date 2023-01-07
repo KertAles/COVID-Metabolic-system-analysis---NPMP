@@ -2,8 +2,9 @@ import sklearn
 from sklearn import tree
 from sklearn.naive_bayes import GaussianNB
 import matplotlib.pyplot as plt
+import json
 
-from utils import read_split_data
+from utils import read_split_data, read_subsystem
 import pickle
 
 def evaluate_model(model, test_X, test_Y) :
@@ -18,14 +19,16 @@ if __name__ == '__main__' :
     n_nb_reactions = 0
     n_dt_reactions = 0
     n_reactions = 0
+    subsystem_dict = read_subsystem()
     for model in ['Gimme', 'iMAT', 'init', 'Tinit']:
         for cell in ['293T', 'A549', 'CALU', 'Lung', 'NHBE']:
+                
             model_name = model + '_' + cell
-
             print('Training on model ' + model_name)
 
             train_X, train_Y, test_X, test_Y, reactions = read_split_data(model=model, cell=cell, shuffle=True, ratio=0.5)
             n_reactions += len(reactions)
+            
 
             model_gauss = GaussianNB()
             model_tree = tree.DecisionTreeClassifier()
@@ -37,14 +40,14 @@ if __name__ == '__main__' :
             acc_dt = evaluate_model(model_tree, test_X, test_Y)
 
             results[model_name] = {'NB': acc_nb,
-                                   'DT': acc_dt}
+                                'DT': acc_dt}
+
             print('Accuracy --- NB : ' + str(acc_nb) + '  DT : ' + str(acc_dt))
 
             dt_reactions = []
             nb_reactions = []
 
-            for i, reaction in enumerate(reactions) :
-
+            for i, reaction in enumerate(reactions):
                 model_gauss.fit(train_X[:, i].reshape(-1, 1), train_Y)
                 model_tree.fit(train_X[:, i].reshape(-1, 1), train_Y)
 
@@ -57,8 +60,14 @@ if __name__ == '__main__' :
                     if acc_dt == 1.0 :
                         dt_reactions.append(reaction)
 
-            #tree.plot_tree(model_tree)
-            #plt.show()
+
+        #tree.plot_tree(model_tree)
+        #plt.show()
+
+            
+            # write subsystem results to json file
+            with open("subsystem_results.json", "w") as f:
+                json.dump(results, f)
 
             n_nb_reactions += len(nb_reactions)
             n_dt_reactions += len(dt_reactions)
