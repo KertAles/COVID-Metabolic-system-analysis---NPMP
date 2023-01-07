@@ -7,11 +7,13 @@ def save_csv(data):
     pass
 
 
+# Save data to json file
 def save_data(data, name_of_file):
     with open(f'{name_of_file}.txt', 'w') as convert_file:
         convert_file.write(json.dumps(data))
 
 
+# Draw boxplot from dictionary
 def draw_boxplot(data):
     data_array = []
     for keys in data:
