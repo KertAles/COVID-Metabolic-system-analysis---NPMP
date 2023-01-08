@@ -103,7 +103,7 @@ print('Average changed reactions --- NB : ' + str(n_nb_reactions) + '  DT : ' + 
 
 print('Done.')
 
-# Save data to .csv file
+# Save data (cell, model) to .csv file
 save_csv(common_reactions_per_model, "reactions_per_model")
 save_csv(common_reactions_per_model, "reactions_per_cell")
 

@@ -26,6 +26,7 @@ def draw_boxplot(data, file_name):
     ticks = data.keys()
 
     def set_box_color(bp, file_name):
+        # colors for model or cell
         colors = []
         if file_name == 'reactions_per_model_data.txt':
             # colors: royalblue, limegreen, peachpuff1, burntorange
