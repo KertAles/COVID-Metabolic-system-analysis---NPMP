@@ -45,7 +45,7 @@ def draw_boxplot(data, file_name):
 
     plt.figure()
 
-    boxplot = plt.boxplot(data_array, positions=np.array(range(len(data.keys()))) * 2.0, patch_artist=True, sym='', widths=0.6)
+    boxplot = plt.boxplot(data_array, positions=np.array(range(len(data.keys()))) * 2.0, patch_artist=True, sym='', widths=1.5)
     set_box_color(boxplot, file_name)
 
     # legend
