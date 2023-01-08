@@ -19,7 +19,7 @@ def save_data(data, name_of_file):
         convert_file.write(json.dumps(data))
 
 
-def draw_boxplot(data):
+def draw_boxplot(data, file_name):
     data_array = []
     for keys in data:
         data_array.append(data[keys])
@@ -35,6 +35,9 @@ def draw_boxplot(data):
         elif file_name == 'reactions_per_cell_data.txt':
             # colors: royalblue, limegreen, peachpuff1, burnt orange, scarlet
             colors = ['#234E70', '#CCF381', '#EEA47FFF', '#EE4E34', '#B85042']
+        elif file_name == 'all_comb.txt':
+            # only one color, 20 combinations
+            colors = ['#EEA47FFF']
         
         for patch, color in zip(bp['boxes'], colors):
             patch.set_facecolor(color)
@@ -66,11 +69,11 @@ def draw_boxplot(data):
     # show plot
     plt.show()
 
+if __name__ == '__main__':
+    with open('reactions_per_model_data.txt', 'r') as file:
+        data1 = json.load(file)
+        draw_boxplot(data1, file.name)
 
-with open('reactions_per_model_data.txt', 'r') as file:
-    data1 = json.load(file)
-    draw_boxplot(data1, file.name)
-
-with open('reactions_per_cell_data.txt', 'r') as file:
-    data2 = json.load(file)
-    draw_boxplot(data2, file.name)
+    with open('reactions_per_cell_data.txt', 'r') as file:
+        data2 = json.load(file)
+        draw_boxplot(data2, file.name)

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import json
 
 from utils import read_split_data, read_subsystem
+from rand_functions import draw_boxplot
 import pickle
 
 def evaluate_model(model, test_X, test_Y) :
@@ -16,6 +17,7 @@ def evaluate_model(model, test_X, test_Y) :
 
 if __name__ == '__main__' :
     results = {}
+    comb_results = []
     n_nb_reactions = 0
     n_dt_reactions = 0
     n_reactions = 0
@@ -60,6 +62,8 @@ if __name__ == '__main__' :
                     if acc_dt == 1.0 :
                         dt_reactions.append(reaction)
 
+            comb_results.append(len(nb_reactions)/len(reactions))
+
 
         #tree.plot_tree(model_tree)
         #plt.show()
@@ -88,3 +92,5 @@ if __name__ == '__main__' :
     print(results)
 
     print('Done.')
+
+    draw_boxplot({'all combinations': comb_results}, 'all_comb.txt')
