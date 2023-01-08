@@ -3,8 +3,14 @@ import json
 import numpy as np
 
 
-def save_csv(data):
-    pass
+def save_csv(data, file_name):
+    print('test')
+    with open(f'{file_name}.csv', 'w') as f:
+        for key in data:
+            f.write(f'{key}\n')
+            for values in data[key]:
+                f.write(';'.join((str(values[0]), values[1])) + '\n')
+    return
 
 
 def save_data(data, name_of_file):
@@ -12,23 +18,35 @@ def save_data(data, name_of_file):
         convert_file.write(json.dumps(data))
 
 
-def draw_boxplot(data):
+def draw_boxplot(data, file_name):
     data_array = []
     for keys in data:
         data_array.append(data[keys])
 
     ticks = data.keys()
 
-    def set_box_color(bp, color):
-        plt.setp(bp['boxes'], color=color)
-        plt.setp(bp['whiskers'], color=color)
-        plt.setp(bp['caps'], color=color)
-        plt.setp(bp['medians'], color=color)
+    def set_box_color(bp, file_name):
+        colors = []
+        if file_name == 'reactions_per_model_data.txt':
+            # colors: royalblue, limegreen, peachpuff1, burntorange
+            colors = ['#234E70', '#CCF381', '#EEA47FFF', '#EE4E34']
+        elif file_name == 'reactions_per_cell_data.txt':
+            # colors: royalblue, limegreen, peachpuff1, burntorange, scarlet
+            colors = ['#234E70', '#CCF381', '#EEA47FFF', '#EE4E34', '#B85042']
+        
+        for patch, color in zip(bp['boxes'], colors):
+            patch.set_facecolor(color)
+
+        plt.setp(bp['medians'], color='black')
+         # plt.setp(bp['boxes'], color=color)
+         # plt.setp(bp['whiskers'], color=color)
+         # plt.setp(bp['caps'], color=color)
+        return
 
     plt.figure()
 
-    boxplot = plt.boxplot(data_array, positions=np.array(range(len(data.keys()))) * 2.0, sym='', widths=0.6)
-    set_box_color(boxplot, '#cc00ff')
+    boxplot = plt.boxplot(data_array, positions=np.array(range(len(data.keys()))) * 2.0, patch_artist=True, sym='', widths=0.6)
+    set_box_color(boxplot, file_name)
 
     # legend
     # plt.plot([], c='#cc00ff', label=f'Percentage range of significantly changed reactions per {file.name.split("_")[2]}')
@@ -49,8 +67,8 @@ def draw_boxplot(data):
 
 with open('reactions_per_model_data.txt', 'r') as file:
     data1 = json.load(file)
-    draw_boxplot(data1)
+    draw_boxplot(data1, file.name)
 
 with open('reactions_per_cell_data.txt', 'r') as file:
     data2 = json.load(file)
-    draw_boxplot(data2)
+    draw_boxplot(data2, file.name)

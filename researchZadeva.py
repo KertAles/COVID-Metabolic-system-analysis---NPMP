@@ -99,12 +99,18 @@ n_dt_reactions /= 20
 n_reactions /= 20
 print('Average number of common reactions : ' + str(n_reactions))
 print('Average changed reactions --- NB : ' + str(n_nb_reactions) + '  DT : ' + str(n_dt_reactions))
-print(results)
+# print(results)
 
 print('Done.')
+
+# Save data to .csv file
+save_csv(common_reactions_per_model, "reactions_per_model")
+save_csv(common_reactions_per_model, "reactions_per_cell")
 
 # Save the data
 save_data(common_reactions_per_model_for_box_plot, "reactions_per_model_data")
 save_data(common_reactions_per_cell_for_box_plot, "reactions_per_cell_data")
 save_data(common_reactions_per_model, "reactions_per_model")
 save_data(common_reactions_per_cell, "reactions_per_cell")
+
+
