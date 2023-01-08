@@ -29,10 +29,10 @@ def draw_boxplot(data, file_name):
         # colors for model or cell
         colors = []
         if file_name == 'reactions_per_model_data.txt':
-            # colors: royalblue, limegreen, peachpuff1, burntorange
+            # colors: royalblue, limegreen, peachpuff1, burnt orange
             colors = ['#234E70', '#CCF381', '#EEA47FFF', '#EE4E34']
         elif file_name == 'reactions_per_cell_data.txt':
-            # colors: royalblue, limegreen, peachpuff1, burntorange, scarlet
+            # colors: royalblue, limegreen, peachpuff1, burnt orange, scarlet
             colors = ['#234E70', '#CCF381', '#EEA47FFF', '#EE4E34', '#B85042']
         
         for patch, color in zip(bp['boxes'], colors):
