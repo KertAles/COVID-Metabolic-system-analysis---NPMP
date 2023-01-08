@@ -13,12 +13,13 @@ def save_csv(data, file_name):
     return
 
 
+# Save data to json file
 def save_data(data, name_of_file):
     with open(f'{name_of_file}.txt', 'w') as convert_file:
         convert_file.write(json.dumps(data))
 
 
-def draw_boxplot(data, file_name):
+def draw_boxplot(data):
     data_array = []
     for keys in data:
         data_array.append(data[keys])
