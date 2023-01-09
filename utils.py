@@ -1,5 +1,8 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import json
 import numpy as np
+
 
 def read_data(path='./data/', model='Gimme', cell='293T', shuffle=False, shuffle_seed=42) :
     # Construct base path
@@ -41,7 +44,7 @@ def read_split_data_subs(path='./data/', model='Gimme', cell='293T', subsystem=[
 
 def read_split_data(path='./data/', model='Gimme', cell='293T', shuffle=False, shuffle_seed=42, ratio=0.2) :
     data, reactions = read_data(path, model, cell, shuffle, shuffle_seed)
-    print(data, reactions)
+    #print(data, reactions)
     train_X, train_Y, test_X, test_Y = split_data(data, ratio)
 
     return train_X, train_Y, test_X, test_Y, reactions
@@ -69,12 +72,126 @@ def read_subsystem_data(subsystem_dict, common_reactions, subsystem='neki') :
     return relevant_reactions
 
 
-def crossevalidation(data, i=0, ratio=0.2) :
-    # TODO:: Za na koncu
+def get_number_of_subsystem_reactions(model, cell):
+    subsystem_dict = read_subsystem()
+    subsys_reaction_count = {}
+    data, common_reactions = read_data(model=model, cell=cell)
+    for subsystem in subsystem_dict.keys():
+        subsys_reaction_count[subsystem] = len(read_subsystem_data(subsystem_dict, common_reactions, subsystem))
 
-    raise NotImplementedError
+    return subsys_reaction_count
 
 
-#for model in ['Gimme', ....]
-#    for cell in ['293T'] :
+def save_csv(data, file_name):
+    print('test')
+    with open(f'results/{file_name}.csv', 'w') as f:
+        for key in data:
+            f.write(f'{key}\n')
+            for values in data[key]:
+                f.write(';'.join((str(values[0]), values[1])) + '\n')
+    return
 
+
+# Save data to json file
+def save_data(data, name_of_file):
+    with open(f'results/{name_of_file}.txt', 'w') as convert_file:
+        convert_file.write(json.dumps(data))
+
+
+def draw_boxplot(data, file_name, figsize=(6, 4)):
+    data_array = []
+    for keys in data:
+        data_array.append(data[keys])
+
+    ticks = data.keys()
+
+    def set_box_color(bp, file_name):
+        # colors for model or cell
+        colors = []
+        if file_name == 'reactions_per_model_data.txt':
+            # colors: royalblue, limegreen, peachpuff1, burnt orange
+            colors = ['#CCF381', '#CCF381', '#CCF381', '#CCF381']
+        elif file_name == 'reactions_per_cell_data.txt':
+            # colors: royalblue, limegreen, peachpuff1, burnt orange, scarlet
+            colors = ['#EE4E34', '#EE4E34', '#EE4E34', '#EE4E34', '#EE4E34']
+        elif file_name == 'all_comb.txt':
+            # only one color, 20 combinations
+            colors = ['#234E70']
+
+        for patch, color in zip(bp['boxes'], colors):
+            patch.set_facecolor(color)
+
+        plt.setp(bp['medians'], color='black')
+        # plt.setp(bp['boxes'], color=color)
+        # plt.setp(bp['whiskers'], color=color)
+        # plt.setp(bp['caps'], color=color)
+        return
+
+    plt.figure(figsize=figsize, dpi=200)
+
+    boxplot = plt.boxplot(data_array, positions=np.array(range(len(data.keys()))) * 2.0, patch_artist=True, sym='',
+                          widths=1.5)
+    set_box_color(boxplot, file_name)
+
+    # legend
+    # plt.plot([], c='#cc00ff', label=f'Percentage range of significantly changed reactions per {file.name.split("_")[2]}')
+    # plt.plot([], c='#2C7BB6', label='Oranges')
+    # plt.legend()
+
+    plt.xticks(range(0, len(ticks) * 2, 2), ticks)
+    plt.xlim(-2, len(ticks) * 2)
+    plt.ylim(0, 1)
+    plt.xlabel(f"{file_name.split('_')[2].split('.')[0]}")
+    plt.ylabel("Percentage of significantly changed reactions")
+    plt.tight_layout()
+    # plt.title(f"{file.name.split('_')[2]}")
+    plt.savefig(f'{file_name.split(".")[0]}.png')
+    # show plot
+    plt.show()
+
+
+def writeout_results():
+    with open('results/reactions_per_model_data.txt', 'r') as file:
+        data1 = json.load(file)
+        draw_boxplot(data1, file.name)
+
+    with open('results/reactions_per_cell_data.txt', 'r') as file:
+        data2 = json.load(file)
+        draw_boxplot(data2, file.name)
+
+    with open('results/reactions_per_cell.txt', 'r') as file:
+        data3 = json.load(file)
+        sorted_cells = sorted(data3['iMAT']['Lung'], reverse=True)
+        table_data = ''
+
+        # subsys = read_subsystem()
+        # subsys_size = {}
+        # for sub in subsys :
+        #    subsys_size[sub] = len(subsys[sub])
+        subsys_size = get_number_of_subsystem_reactions('iMAT', 'Lung')
+
+        for i, cell in enumerate(sorted_cells):
+            table_data += cell[1] + ' & ' + str(round(cell[0] * 100, 2)) + '\%' + ' & ' + str(subsys_size[cell[1]])
+            table_data += ' \\\\ \n \\hline \n'
+            if i == 15:
+                break
+
+        print(table_data)
+
+        print(sum([cell[0] for cell in sorted_cells]) / len(sorted_cells))
+
+        sorted_cells = sorted(sorted_cells, key=lambda x: subsys_size[x[1]], reverse=True)
+
+        table_data = ''
+
+        for i, cell in enumerate(sorted_cells):
+            table_data += cell[1] + ' & ' + str(round(cell[0] * 100, 2)) + '\%' + ' & ' + str(subsys_size[cell[1]])
+            table_data += ' \\\\ \n \\hline \n'
+            if i == 9:
+                break
+
+        print(table_data)
+
+
+if __name__ == '__main__' :
+    writeout_results()

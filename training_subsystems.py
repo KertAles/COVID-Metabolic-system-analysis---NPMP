@@ -1,7 +1,5 @@
-import sklearn
 from sklearn import tree
 from sklearn.naive_bayes import GaussianNB
-import matplotlib.pyplot as plt
 import json
 
 from utils import read_split_data, read_subsystem, read_subsystem_data
@@ -72,7 +70,7 @@ if __name__ == '__main__' :
 
             
             # write subsystem results to json file
-        with open("subsystem_results.json", "w") as f:
+        with open("results/subsystem_results.json", "w") as f:
             json.dump(results, f)
 
             n_nb_reactions += len(nb_reactions)

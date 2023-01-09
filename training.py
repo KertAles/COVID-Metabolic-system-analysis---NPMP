@@ -1,11 +1,8 @@
-import sklearn
 from sklearn import tree
 from sklearn.naive_bayes import GaussianNB
-import matplotlib.pyplot as plt
 import json
 
-from utils import read_split_data, read_subsystem
-from rand_functions import draw_boxplot
+from utils import read_split_data, read_subsystem, draw_boxplot
 import pickle
 
 def evaluate_model(model, test_X, test_Y) :
@@ -32,14 +29,14 @@ if __name__ == '__main__' :
             
 
 
-                model_gauss = GaussianNB()
-                model_tree = tree.DecisionTreeClassifier()
+            model_gauss = GaussianNB()
+            model_tree = tree.DecisionTreeClassifier()
 
-                model_gauss.fit(train_X, train_Y)
-                model_tree.fit(train_X, train_Y)
+            model_gauss.fit(train_X, train_Y)
+            model_tree.fit(train_X, train_Y)
 
-                acc_nb = evaluate_model(model_gauss, test_X, test_Y)
-                acc_dt = evaluate_model(model_tree, test_X, test_Y)
+            acc_nb = evaluate_model(model_gauss, test_X, test_Y)
+            acc_dt = evaluate_model(model_tree, test_X, test_Y)
 
 
             results[model_name] = {'NB': acc_nb,
@@ -53,7 +50,7 @@ if __name__ == '__main__' :
             for i, reaction in enumerate(reactions):
                 model_gauss.fit(train_X[:, i].reshape(-1, 1), train_Y)
                 model_tree.fit(train_X[:, i].reshape(-1, 1), train_Y)
-                    if abs(model_gauss.var_[0]) > 1e-6 :
+                if abs(model_gauss.var_[0]) > 1e-6 :
                         acc_nb = evaluate_model(model_gauss, test_X[:, i].reshape(-1, 1), test_Y)
                         acc_dt = evaluate_model(model_tree, test_X[:, i].reshape(-1, 1), test_Y)
                         #print('Accuracy for reaction ' + reaction + ' --- NB : ' + str(acc_nb) + '  DT : ' + str(acc_dt))
@@ -66,24 +63,25 @@ if __name__ == '__main__' :
             comb_results.append(len(nb_reactions)/len(reactions))
 
 
-        #tree.plot_tree(model_tree)
-        #plt.show()
+            #tree.plot_tree(model_tree)
+            #plt.show()
 
-            
+            f = open('./models/' + model_name + '_NB' + '.pickle', 'wb')
+            pickle.dump(model_gauss, f)
+            f.close()
+
+            f = open('./models/' + model_name + '_DT' + '.pickle', 'wb')
+            pickle.dump(model_tree, f)
+            f.close()
+
+
             # write subsystem results to json file
-            with open("subsystem_results.json", "w") as f:
+            with open("results/combinations_results.json", "w") as f:
                 json.dump(results, f)
 
                 n_nb_reactions += len(nb_reactions)
                 n_dt_reactions += len(dt_reactions)
 
-                f = open('./models/' + model_name + '_NB' + '.pickle', 'wb')
-                pickle.dump(model_gauss, f)
-                f.close()
-
-                f = open('./models/' + model_name + '_DT' + '.pickle', 'wb')
-                pickle.dump(model_tree, f)
-                f.close()
 
     n_nb_reactions /= 20
     n_dt_reactions /= 20
@@ -94,4 +92,4 @@ if __name__ == '__main__' :
 
     print('Done.')
 
-    draw_boxplot({'all combinations': comb_results}, 'all_comb.txt')
+    draw_boxplot({'all combinations': comb_results}, 'all_cellmodel_combinations.txt', (5,4))
